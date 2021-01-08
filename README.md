@@ -580,12 +580,111 @@ TRUNCATE [ TABLE ] [ ONLY ] name [*][, ...]
 - `RESTART IDENTITY` : Reseta o valor do id com relação ao valor informado.
 - `CASCADE`: Apaga as referências da tabela truncada em outras também (cuidado)
 
-# Comandos úteis
 
-`\du`: lista todas as roles criadas
 
-`\q`: sai do banco de dados (via terminal)
+# Funções agregadas em PostgreSQL
 
-`\?`: para abrir  menu de ajuda do operador
+Existem diversas funções agregadas , e elas podem ser encontradas na documentação da PostgreSQL, porém as mais recorrentes são:
+
+- **AVG**
+- **COUNT (Opção: HAVING)**
+- **MAX**
+- **MIN**
+- **SUM**
+
+
+
+## AVG
+
+Retorna a média dos valores de uma dada coluna de uma tabela
+
+`SELECT AVG(coluna) FROM tabela`
+
+#### Exemplo
+
+```sql
+SELECT AVG(valor) FROM cliente_transacoes;
+```
+
+
+
+## COUNT
+
+Retorna a quantidade de registros de uma dada coluna e pode ser usado junto com `GROUP BY` para agrupar determinadas colunas e com o `HAVING` para filtrar .
+
+`SELECT COUNT(coluna) FROM tabela`
+
+#### Exemplo
+
+```sql
+	SELECT COUNT(id), tipo_transacao_id
+	FROM cliente_transacoes
+	GROUP BY tipo_transacao_id
+	HAVING COUNT(id) > 150;
+```
 
  
+
+## MAX
+
+Retorna o valor máximo de uma coluna
+
+`SELECT MAX(coluna) FROM tabela`
+
+#### Exemplo
+
+```sql 
+	SELECT max(numero) FROM cliente;
+	SELECT max(valor), tipo_transacao_id
+	FROM cliente_transacoes
+	GROUP BY tipo_transacao_id;
+```
+
+
+
+## MIN
+
+Retorna o valor mínimo de uma coluna
+
+`SELECT MIN(coluna) FROM tabela`
+
+#### Exemplo
+
+```sql
+	SELECT min(numero) FROM cliente;
+	SELECT min(valor), tipo_transacao_id
+	FROM cliente_transacoes
+	GROUP BY tipo_transacao_id;
+```
+
+
+
+## SUM
+
+Retorna a soma dos valores de uma dada coluna
+
+`SELECT SUM(coluna) FROM tabela`
+
+#### Exemplo
+
+```sql
+	SELECT sum(valor), tipo_transacao_id
+	FROM cliente_transacoes
+	GROUP BY tipo_transacao_id
+	ORDER BY tipo_transacao_id DESC
+```
+
+
+
+
+
+# DICAS
+
+:arrow_forward:  Para listar todas as colunas e os seus respectivos tipos de uma determinada tabela , basta consultar a view `information_schema.columns` passando como parâmetro de condição o `table_name`.
+
+`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'nome_da_sua_tabela'`
+
+
+
+ 
+
