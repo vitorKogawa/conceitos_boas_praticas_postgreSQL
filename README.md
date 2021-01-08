@@ -394,13 +394,25 @@ São tabelas, views funções , types, sequences , entre outros pertencentes ao 
 
 ## Comandos Database
 
-![image-20210108014613794](C:\Users\vitor\AppData\Roaming\Typora\typora-user-images\image-20210108014613794.png)
+`CREATE DATABASE name`
 
-
+`DROP DATABASE [nome]`
 
 ## Comando Schema
 
-![image-20210108014926744](C:\Users\vitor\AppData\Roaming\Typora\typora-user-images\image-20210108014926744.png)
+`CREATE SCHEMA schema_name [AUTHORIZATION role_especifica]`
+
+`ALTER SCHEMA name RENAME TO new_name`
+
+`DROP SCHEMA [nome]`
+
+
+
+:arrow_forward: **É  um boa prática implementar idempotência nas tarefas realizadas dentro da base de dados, com no esquema abaixo**
+
+`CREATE SCHEMA IF NOT EXISTS schema_name [AUTHORIZATION role_especifica]`
+
+`DROP SCHEMA IF EXISTS [nome]`
 
 
 
@@ -474,7 +486,99 @@ Sua principal função é garantir a integridade referencial entre tabelas
 
 
 
+# Conheça o DML e o Truncate
 
+## Idempotência
+
+Propriedade que algumas ações / operações possuem possibilitando-as de serem executadas diversas vezes sem alterar o resultado inicial.
+
+
+
+### Melhores práticas em DDL
+
+Importante as tabelas possuírem campos que realmente serão utilizados e que sirvam de atributo direto a um objetivo em comum.
+
+- Criar / Acrescentar colunas que são "atributos básico" do objeto;
+- Cuidado com regras (**constraints**)
+- Cuidado com o excesso de FKs
+- Cuidado com o tamanho indevido de FKs
+
+
+
+## DML - CRUD (Create, Read, Update, Delete)
+
+## SELECT 
+
+`SELECT (campos,) FROM tabela [condições]`
+
+### Exemplo:
+
+- `SELECT numero, nome FROM banco;`
+- `SELECT numero, nome FROM banco WHERE ativo IS TRUE;`
+- `SELECT nome FROM cliente WHERE email LIKE '%gmail.com';`
+
+
+
+:arrow_forward: `LIKE`: Respeita case sensitive
+
+:arrow_forward: `ILIKE`: Não respeita o case sensitive
+
+
+
+###  SELECT  - Condição (WHERE / AND / OR)
+
+A primeira condição sempre começa com **WHERE** ,  e as demais condições com **AND** ou **OR** .
+
+Operador possível:
+
+-  `=`
+- `>` / `>=`
+- `<` /  `<=`
+-  `<>` /  `!=`
+- `LIKE` /  `ILIKE`
+- `IN` 
+
+
+
+## INSERT
+
+`INSERT (campos da tabela) VALUES (valores)` ou
+
+`INSERT (campos da tabela) SELECT (valores)`
+
+### INSERT - Idempotência
+
+ `INSERT INTO agencia(banco_numero, numero, nome) VALUES (341, 1, 'VITOR KOGAWA') ON CONFLICT (banco_numero, numero) DO NOTHING `
+
+:arrow_forward: `ON CONFLICT`: Trabalha com base nas `constraints` , no exemplo acima caso ocorra algum erro com as PK a query não vai fazer nada (`DO NOTHING`) 
+
+
+
+## UPDATE
+
+`UPDATE (tabela) SET campo1 = novo_valor WHERE (condição)`
+
+:warning: Sempre utilize o `UPDATE`  com alguma condição 
+
+
+
+## DELETE
+
+`DELETE from tabela WHERE (condição)` 
+
+
+
+# TRUNCATE
+
+Esvazia sua tabela
+
+```sql
+TRUNCATE [ TABLE ] [ ONLY ] name [*][, ...]
+[ RESTART IDENTITY | CONTINUE IDENTITY ] [ CASCADE | RESTRICT ]
+```
+
+- `RESTART IDENTITY` : Reseta o valor do id com relação ao valor informado.
+- `CASCADE`: Apaga as referências da tabela truncada em outras também (cuidado)
 
 # Comandos úteis
 
