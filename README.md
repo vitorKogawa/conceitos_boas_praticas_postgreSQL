@@ -444,7 +444,27 @@ Sua principal função é garantir a integridade referencial entre tabelas
 
 ## Tipos de dados
 
-![image-20210108020355318](C:\Users\vitor\AppData\Roaming\Typora\typora-user-images\image-20210108020355318.png)
+- **Numeric types** 
+- **Monetary types** :moneybag:
+- **Character types** :pencil2:
+- **Binary data types**
+- **Data / time types**
+- **Boolean type**
+- **Enumerated type**
+- **Geometric types**
+- **Network Adress Types (IP)** 
+- **Bit String types**
+- **Text search types**
+- **UUID type**
+- **XML type**
+- **JSON type**
+- **Arrays type**
+- **Composite type**
+- **Range type**
+- **Domain type**
+- **Object Identifier type**
+- **pg_Isn type**
+- **Pseudo-Types**
 
 
 
@@ -675,6 +695,288 @@ Retorna a soma dos valores de uma dada coluna
 ```
 
 
+
+# JOIN
+
+São utilizados durante o desenvolvimento da consulta:
+
+### Tipos de JOIN
+
+- `JOIN`
+- `LEFT JOIN`
+- `RIGHT JOIN`
+- `FULL JOIN`
+- `CROSS JOIN`
+
+
+
+##  JOIN (INNER)
+
+Ao realizar o `JOIN` ou`INNER JOIN`, será retornado somente os registros em comum as tabelas envolvidas.
+
+```sql
+SELECT tabela1.campos, tabela2.campos
+FROM tabela_1
+JOIN tabela_2
+ON tabela_2.campo = tabela_1.campo
+```
+
+
+
+## LEFT JOIN (LEFT OUTER JOIN)
+
+Retorna todos os registros envolvidos da tabela a esquerda , mais os registros relacionados a tabela da direita, retornando null para os valores não relacionados.
+
+```sql
+SELECT tabela_1.campos, tabela_2.campos
+from tabela_1
+LEFT JOIN tabela_2
+ON tabela_2.campo = tabela_1.campo
+```
+
+
+
+## RIGHT JOIN (RIGHT OUTER JOIN)
+
+Retorna todos os registros envolvidos da tabela a **direita** , mais os registros relacionados a tabela da **esquerda**, retornando null para os valores não relacionados.
+
+```sql
+SELECT tabela_1.campos, tabela_2.campos
+from tabela_1
+RIGHT JOIN tabela_2
+ON tabela_2.campo = tabela_1.campo
+```
+
+
+
+## FULL JOIN (FULL OUTER JOIN)
+
+Retorna todos os registros relacionados entre as tabelas envolvidas , junto aos registros não relacionados de todas as tabelas envolvidas 
+
+```sql
+SELECT tabela_1.campos, tabela_2.campos
+from tabela_1
+FULL JOIN tabela_2
+ON tabela_2.campo = tabela_1.campo
+```
+
+
+
+## CROSS JOIN
+
+Todos os dados de uma tabela serão cruzados com todos os dados da outra tabela , retornando uma matriz.
+
+```sql
+SELECT tabela_1.campos, tabela_2.campos
+FROM tabela_1
+CROSS JOIN tabela_2
+```
+
+
+
+![imagem_joins](./img/joins.png)
+
+
+
+# CTE -  Common Table Expressions
+
+Forma auxiliar de organizar "statements", ou seja, blocos de códigos , para consultas muito grandes, gerando tabelas temporárias e criando relacionamentos entre elas.
+
+# Views
+
+- São visões
+- São camadas para as tabelas
+- São alias para uma ou mais queries
+- Aceitam os seguintes comandos:
+  -  select
+  - insert
+  - update
+  - delete
+
+Os comando insert, update e delete só vão funcionar para views referentes a 1 única tabela.
+
+
+
+## Views - Imdepotência
+
+```sql 
+CREATE OR REPLACE VIEW vv_bancos(banco_numero, banco_nome, 	banco_ativo) as (
+	select numero, nome, ativo from banco
+)
+```
+
+
+
+## Views - Temporary
+
+View temporária
+
+```sql
+CREATE OR REPLACE TEMPORARY VIEW vv_banco AS (
+	SELECT numero, nome, ativo
+    FROM banco
+)
+```
+
+- Presente apenas na sessão do usuário
+- Se você se desconectar e conectar novamente, a VIEW não estará disponível.
+
+
+
+## Views - Recursive
+
+Chame a ela mesma
+
+```SQL
+CREATE OR REPLACE RECURSIVE VIEW (nome_da_view)(campos_da_view) AS (
+	SELECT base
+   	UNION ALL 
+    SELECT campos
+    FROM tabela_base
+    JOIN(nome_da_view)
+)
+```
+
+- Obrigatório a presença de UNION ALL
+
+
+
+# Transações
+
+Conceito fundamental de todos os sistemas de bancos de dados.
+
+Conceito de múltiplas etapas / códigos reunidos em apenas 1 transação, onde o resultado precisa ser **tudo ou nada**
+
+Principais comando:
+
+- BEGIN
+- ROLLBACK
+- COMMIT
+- SAVEPOINT
+
+
+
+#  FUNÇÕES
+
+Conjunto de códigos que são executados dentro de uma transação com a finalidade de facilitar a programação e obter o reaproveitamento / reutilização de códigos.
+
+Tipos de funções:
+
+- query language function (escritas em SQL)
+- procedural language function (escritas por exemplo em PL / pgSQL ou PL/py)
+- internal function
+- C-Language function
+
+**USER DEFINED FUNCTION** são funções criadas pelo próprio usuário e são escritas em SQL.
+
+## FUNÇÕES COM IDEMPOTÊNCIA
+
+`CREATE OR REPLACE FUNCTION [nome da função]`
+
+**Regras para trabalhar de com idempotencia com funções:**
+
+- Mesmo nome
+- Mesmo tipo de retorno
+- Mesmo número de parâmetros / argumentos
+
+**Tipos de returns permitidos:**
+
+- integer
+- char / varhcar
+- boolean
+- row
+- table
+- json
+
+**Segurança:**
+
+- SECURITY
+  - REVOKE
+  - DEFINER
+
+**Comportamento:**
+
+- IMMUTABLE: Não pode alterar o banco de dados, 
+- STABLE: Não pode alterar o banco de dados, se dá melhor current_timestamps
+- VOLATILLE: Comportamento padrão, aceita todos os cenários
+
+
+
+**Boas práticas**
+
+- CALLED ON NULL INPUT
+
+  Padrão, se qualquer um dos parâmetros / argumentos for NULL, a função será executada.
+
+- RETURN NULL ON NULL INPUT
+
+  Se qualquer um dos parâmetros / argumentos for NULL, a função retornará NULL
+
+- SECURITY INVOKER
+
+  função execta com as permissões de quem executa
+
+- SECURITY DEFINER
+
+  função exeucta com as permissões de que a criou
+
+- COST
+
+  Custo / row em unidades de CPU
+
+- ROWS
+
+  Número estimado de linhas que será analisada pelo planner
+
+
+
+## SQL FUNCTIONS
+
+- Não é possível utilizar transactions
+
+
+
+### Exemplo
+
+```sql
+CREATE OR REPLACE FUNCTION fc_somar(INTEGER, INTEGER)
+RETURNS INTEGER
+LANGUAGE SQL
+AS $$
+	SELECT $1 + $2;
+$$
+
+--OU
+
+CREATE OR REPLACE FUNCTION fc_somar(num1 INTEGER, num2 INTEGER)
+RETURNS INTEGER
+LANGUAGE SQL
+AS $$ 
+	SELECT num1 + num2
+$$
+```
+
+```sql
+CREATE OR REPLACE FUNCTION banco_add(p_numero integer, p_nome varchar, p_Ativo boolean)
+returns boolean
+language plpgsql
+as $$
+declare variavel_id integer
+begin
+	select into variavel_id numero from banco where nome = p_nome;
+	if variavel_id is null then
+		insert into banco (numero, nome, ativo) values (p_numero, p_nome, p_ativo);
+	else
+		returns false;
+	end if;
+	select into variavel_id numero from banco where nome = p_nome;
+	if variavel_i is null then
+		return false;
+	else
+		return true;
+	end if
+end; $$
+```
 
 
 
